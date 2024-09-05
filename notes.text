@@ -1,0 +1,109 @@
+Let's break down this line of code in more detail:
+const decimalKeys = Object.keys(numerals).reverse().map(Number);
+This line is responsible for creating an array (decimalKeys) that contains the keys from the numerals object in descending numerical order. Here's what each part does:
+1. Object.keys(numerals)
+Object.keys() is a JavaScript method that takes an object (in this case, the numerals object) and returns an array of the object’s keys.
+These keys are initially returned as strings, not numbers. For example, Object.keys(numerals) would return an array like this:
+javascript
+["1", "4", "5", "9", "10", "40", "50", "90", "100", "400", "500", "900", "1000"]
+Why are they strings?
+In JavaScript, object keys are always stored as strings, even if they represent numbers. So, when Object.keys() is called, the numeric values (like 1, 10, etc.) are returned as strings ("1", "10", etc.).
+2. .reverse()
+.reverse() is an array method that reverses the order of elements in an array. Since Roman numeral conversions work from the largest value to the smallest, this step is crucial.
+After calling .reverse() on the array of keys, the array looks like this:
+javascript
+["1000", "900", "500", "400", "100", "90", "50", "40", "10", "9", "5", "4", "1"]
+Reversing ensures that we start with the largest possible Roman numeral (1000, or "M") and work our way down.
+3. .map(Number)
+.map() is an array method that creates a new array by applying a function to each element of the original array. In this case, the function is Number.
+Number is a built-in JavaScript function that converts values (such as strings) into numbers. Since Object.keys() gave us an array of strings, we use map(Number) to convert each string back into a number.
+For example:
+Before applying .map(Number), the array looks like this:
+["1000", "900", "500", "400", "100", "90", "50", "40", "10", "9", "5", "4", "1"].
+After applying .map(Number), it becomes:
+javascript
+[1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+Why do we need this line?
+The purpose of this line is to ensure that we have an array of numeric keys, in descending order, so that when we iterate over them in the next step, we can compare them with the input number (num) and convert it to Roman numerals starting from the largest possible values.
+Without reverse(), we would start with smaller values (like 1, "I"), which would make the Roman numeral conversion incorrect. Similarly, without map(Number), the comparisons between the keys and the input number (num) would be inaccurate because you would be comparing strings against numbers.
+Final Result of decimalKeys:
+After this line runs, decimalKeys is an array of numbers in descending order:
+javascript
+
+
+[1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+This array will be used in the next part of the code to repeatedly check which Roman numeral symbols to use and subtract from num.
+10:58
+decimalKeys.forEach(key => {...})
+This line is starting a forEach loop, which will iterate over each value (in this case, key) in the decimalKeys array. The forEach loop allows us to run the same code block for each element in the array. Here, key refers to the Roman numeral values (like 1000, 900, 500, etc.) in the decimalKeys array.
+At this point, decimalKeys is an array of numbers in descending order, representing Roman numeral values:
+javascript
+
+
+[1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+The purpose of this loop is to take each value (starting with the largest) and see if it can be subtracted from the input num (the number we want to convert to Roman numerals). If so, it adds the corresponding Roman numeral to the result (romanized) and subtracts the value from num until it can no longer be subtracted.
+Inside the loop:
+1. while (key <= num)
+This while loop will keep running as long as the key (the current Roman numeral value, e.g., 1000, 900, etc.) is less than or equal to num (the number we are converting).
+What does this check?
+It checks whether the current Roman numeral can be used in the final Roman numeral string. If key is larger than num, it skips to the next numeral.
+If key is smaller than or equal to num, it keeps subtracting the value and adding the Roman numeral to the result until num is reduced to the point where key can no longer be subtracted.
+Example:
+If num is 1987, the first key is 1000 (M). Since 1000 <= 1987, the while loop will run.
+If num were smaller than the current key, the while loop would not run, and the function would move to the next smaller key.
+2. romanized += numerals[key]
+This line appends (or adds) the corresponding Roman numeral symbol from the numerals object to the romanized string.
+How does it work?
+numerals[key] looks up the Roman numeral for the current key (e.g., numerals[1000] returns "M", numerals[900] returns "CM", etc.).
+It then adds that Roman numeral symbol to the romanized string.
+Example:
+If the key is 1000 (M) and num is 1987, "M" will be added to romanized, so romanized = "M".
+The loop will continue running as long as key <= num.
+3. num -= key
+This line subtracts the current key value from num, reducing the value of num after the corresponding Roman numeral has been added to romanized.
+Why do we subtract?
+Each time we use a Roman numeral (like "M" for 1000), we need to reduce the value of num by that amount, since we’ve accounted for that portion of the number.
+Example:
+If num is 1987 and the key is 1000, after adding "M" to romanized, num will be reduced by 1000, so num becomes 987 (1987 - 1000 = 987).
+The loop will then continue to check the next largest Roman numeral value (900, "CM").
+How the while loop works in practice:
+The while loop keeps subtracting the current key value and adding the corresponding Roman numeral symbol until num becomes smaller than key.
+Example for 1987:
+num = 1987, start with key = 1000:
+1000 <= 1987, so "M" is added to romanized.
+num is now 987.
+Next, key = 900:
+900 <= 987, so "CM" is added to romanized.
+num is now 87.
+Then, key = 500:
+500 > 87, so the while loop doesn’t run for 500.
+Next, key = 400:
+400 > 87, so the loop skips 400.
+Next, key = 100:
+100 > 87, so the loop skips 100.
+Next, key = 90:
+90 > 87, so the loop skips 90.
+Next, key = 50:
+50 <= 87, so "L" is added to romanized.
+num is now 37.
+Then, key = 10:
+10 <= 37, so "X" is added to romanized (3 times in a row since 37 is reduced to 27, then to 17, and finally to 7).
+Finally, key = 5:
+5 <= 7, so "V" is added to romanized.
+num is now 2.
+Lastly, key = 1:
+1 <= 2, so "I" is added to romanized (2 times, reducing num to 0).
+Now, the number 1987 has been fully converted to Roman numerals ("MCMLXXXVII").
+return romanized;
+After the forEach loop finishes running, romanized contains the full Roman numeral string, and it is returned as the final output of the function.
+In summary:
+This block of code iterates through the Roman numeral values in descending order, repeatedly subtracting the largest possible values from num and adding the corresponding Roman numeral symbols to romanized. This ensures the number is fully converted to Roman numerals, starting with the largest value first and working down to the smallest.
+
+
+
+
+
+
+
+
+
